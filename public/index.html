@@ -1,22 +1,420 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>4xO Scout DB MVP</title>
-  <style>
-    body { background:#0f0f0f; color:#eee; font-family: Arial, sans-serif; margin:0; }
-    header{ padding:20px; font-size:28px; border-bottom:1px solid #333; }
-    #app{ padding:20px; }
-    table{ width:100%; border-collapse: collapse; }
-    th,td{ padding:8px; border-bottom:1px solid #333; text-align:left; }
-    th{ cursor: pointer; }
-    .badge{ display:inline-block; padding:4px 8px; border-radius:999px; font-size:12px; margin-right:4px; background:#444; }
-    .score{ font-weight:bold; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scout Vault | One of Our Own</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#06060a;--surface:#0c0c12;--card:#0e0e16;--elevated:#121220;--text:#d8d8e0;--text-bright:#f0f0f5;--muted:#6a6a80;--line:rgba(255,255,255,0.05);--ground:#9a8465;--water:#3b7cf5;--fire:#e04040;--wind:#7890a8;--void:#8b5cf6;--gold:#d4a843;--warn:#e8a030}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',system-ui,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 50% at 20% 0%,rgba(139,92,246,.04) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(59,124,245,.03) 0%,transparent 50%),radial-gradient(ellipse 50% 50% at 50% 50%,rgba(212,168,67,.015) 0%,transparent 40%)}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-repeat:repeat;background-size:128px}
+.app{position:relative;z-index:1}
+.header{display:flex;justify-content:space-between;align-items:center;padding:20px 36px;border-bottom:1px solid var(--line);background:rgba(6,6,10,.85);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50}
+.header-brand{display:flex;align-items:baseline;gap:12px}
+.header-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:22px;color:var(--gold);letter-spacing:.5px}
+.header-divider{opacity:.15;font-weight:300}
+.header-subtitle{font-weight:300;font-size:13px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+.btn-add{background:transparent;border:1px solid rgba(212,168,67,.25);color:var(--gold);padding:10px 22px;border-radius:6px;font-weight:600;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .25s;font-family:inherit}
+.btn-add:hover{background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.45)}
+.main{padding:28px 36px;max-width:1400px;margin:0 auto}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.filter-input,.filter-select{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 14px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border .2s}
+.filter-input:focus,.filter-select:focus{border-color:rgba(255,255,255,.12)}
+.filter-input::placeholder{color:#444}.filter-input{min-width:200px}.filter-select{cursor:pointer}
+.filter-select option{background:#111;color:#ddd}
+.table-wrap{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.player-table{width:100%;border-collapse:collapse}
+.player-table thead{background:rgba(255,255,255,.015)}
+.player-table th{padding:13px 16px;text-align:left;font-weight:600;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);cursor:pointer;user-select:none;white-space:nowrap;transition:color .2s}
+.player-table th:hover{color:var(--text)}
+.player-table td{padding:14px 16px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+.player-table tbody tr{cursor:pointer;transition:background .15s}
+.player-table tbody tr:hover{background:rgba(255,255,255,.02)}
+.player-table tbody tr:last-child td{border-bottom:0}
+.player-table tbody tr.active-row{background:rgba(139,92,246,.04)}
+.player-name{font-weight:600;color:var(--text-bright)}
+.watchlist-dot{color:var(--gold);margin-left:8px;font-size:8px;vertical-align:middle}
+.tier-chip{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(255,255,255,.03);border:1px solid var(--line);font-variant-numeric:tabular-nums}
+.tier-1{color:#e8d48a;border-color:rgba(212,168,67,.15)}.tier-2{color:#b8aae0;border-color:rgba(139,92,246,.12)}.tier-3{color:#90d0a8;border-color:rgba(5,150,105,.12)}.tier-4{color:#8cb8e8;border-color:rgba(59,124,245,.12)}.tier-5{color:#d8a8a8;border-color:rgba(220,64,64,.12)}
+.score-chip{display:inline-flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums}
+.score-num{font-weight:700;font-size:14px;color:var(--text-bright)}
+.grade{display:inline-block;min-width:20px;text-align:center;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.5px;border:1px solid var(--line)}
+.grade.S{color:#e8d48a;border-color:rgba(212,168,67,.25);background:rgba(212,168,67,.06)}.grade.A{color:#c4b5fd;border-color:rgba(139,92,246,.2);background:rgba(139,92,246,.05)}.grade.B{color:#8cb8e8;border-color:rgba(59,124,245,.18);background:rgba(59,124,245,.04)}.grade.C{color:#90d0a8;border-color:rgba(5,150,105,.18);background:rgba(5,150,105,.04)}.grade.D{color:#888;border-color:#2a2a2a}.grade.E{color:#d8a8a8;border-color:rgba(220,64,64,.18);background:rgba(220,64,64,.04)}
+.badge-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}.no-badges{color:#333;font-size:12px}
+.badge{display:inline-flex;align-items:center;justify-content:center;min-width:50px;height:20px;padding:0 8px;border-radius:3px;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);white-space:nowrap}
+.badge::after{content:'';position:absolute;top:-50%;left:-80%;width:50%;height:250%;transform:rotate(25deg);pointer-events:none}
+.badge-4xo{background:linear-gradient(135deg,rgba(212,168,67,.12),rgba(212,168,67,.04));border-color:rgba(212,168,67,.25);color:#e8c868}
+.badge-elite{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(139,92,246,.04));border-color:rgba(139,92,246,.25);color:#c4b0f8}
+.badge-gem{background:linear-gradient(135deg,rgba(5,150,105,.12),rgba(5,150,105,.04));border-color:rgba(5,150,105,.25);color:#80e8c0}
+.badge-engine{background:linear-gradient(135deg,rgba(224,64,64,.12),rgba(224,64,64,.04));border-color:rgba(224,64,64,.2);color:#f0a0a0}
+.badge-maestro{background:linear-gradient(135deg,rgba(59,124,245,.1),rgba(14,165,233,.04));border-color:rgba(14,165,233,.22);color:#90c8f0}
+.badge-prospect{background:linear-gradient(135deg,rgba(226,232,240,.06),rgba(200,210,225,.02));border-color:rgba(226,232,240,.15);color:#d0d8e8}
+.badge-wall{background:linear-gradient(135deg,rgba(71,85,105,.14),rgba(71,85,105,.04));border-color:rgba(148,163,184,.15);color:#b0b8c8}
+.badge-silk{background:linear-gradient(135deg,rgba(20,184,166,.1),rgba(20,184,166,.03));border-color:rgba(20,184,166,.22);color:#80d8c8}
+@keyframes shimmer{0%{transform:translateX(-200%) rotate(25deg);opacity:0}25%{opacity:.8}65%{opacity:.15}100%{transform:translateX(250%) rotate(25deg);opacity:0}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 transparent}50%{box-shadow:0 0 18px rgba(139,92,246,.18)}}
+@keyframes ember{0%,100%{box-shadow:0 0 0 transparent}50%{box-shadow:0 0 14px rgba(224,64,64,.18)}}
+@keyframes hueShift{0%{filter:hue-rotate(0)}50%{filter:hue-rotate(14deg)}100%{filter:hue-rotate(0)}}
+@keyframes sparkle{0%,100%{opacity:.1}50%{opacity:.65}}
+@keyframes metal{0%{filter:brightness(1)}50%{filter:brightness(1.18)}100%{filter:brightness(1)}}
+.badge-4xo::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:shimmer 3s ease-in-out infinite .5s}
+.badge-gem::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);animation:shimmer 3.5s ease-in-out infinite 1s}
+.badge-elite{animation:glow 2.8s ease-in-out infinite}.badge-engine{animation:ember 2.2s ease-in-out infinite}
+.badge-maestro{animation:hueShift 4.5s ease-in-out infinite}.badge-silk{animation:hueShift 3.8s ease-in-out infinite}
+.badge-wall{animation:metal 3.2s ease-in-out infinite}
+.badge-prospect::after{background:radial-gradient(circle at 35% 40%,rgba(255,255,255,.6),transparent 50%);animation:sparkle 2.8s ease-in-out infinite}
+.empty-state{text-align:center;padding:100px 20px}
+.empty-kanji{font-family:'Noto Serif JP',serif;font-size:64px;opacity:.06;margin-bottom:16px;letter-spacing:24px}
+.empty-quote{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;opacity:.35;max-width:380px;margin:0 auto;line-height:1.6}
+.empty-cta{margin-top:12px;opacity:.2;font-size:13px}
+.detail-panel{position:fixed;right:0;top:0;bottom:0;width:460px;background:rgba(8,8,14,.96);border-left:1px solid var(--line);overflow-y:auto;padding:24px;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:100;backdrop-filter:blur(16px)}
+.detail-panel.open{transform:translateX(0)}
+.detail-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:200px;background:radial-gradient(ellipse at 50% -20%,rgba(139,92,246,.04),transparent 70%);pointer-events:none}
+.detail-close{position:sticky;top:0;float:right;background:transparent;border:0;color:var(--muted);font-size:18px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all .2s;z-index:10}
+.detail-close:hover{color:#fff;background:rgba(255,255,255,.05)}
+.detail-header{position:relative;margin-bottom:20px;padding-top:8px}
+.detail-name{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--text-bright);margin-bottom:6px}
+.detail-meta{color:var(--muted);font-size:12px;margin-bottom:8px;line-height:1.6}
+.detail-tier{margin-bottom:10px}.detail-badges{margin-bottom:4px}.detail-badges .badge{height:22px;font-size:10px}
+.section{border:1px solid var(--line);border-radius:8px;padding:16px;margin-top:16px;background:rgba(255,255,255,.01)}
+.section-title{display:flex;align-items:baseline;gap:10px;font-weight:600;font-size:13px;letter-spacing:.3px;margin-bottom:12px;color:var(--text)}
+.kanji{font-family:'Noto Serif JP',serif;font-size:20px;line-height:1}
+.section .muted{color:var(--muted);font-size:12px;margin-left:auto;font-weight:500}
+.scores-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border-radius:6px;overflow:hidden}
+.score-block{background:var(--surface);padding:14px 8px;text-align:center}
+.score-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.score-value{font-size:22px;font-weight:700;color:var(--text-bright);font-variant-numeric:tabular-nums}
+.score-value .grade{font-size:18px;padding:0;border:0;background:transparent}
+.radar-wrap{display:flex;justify-content:center;padding:8px 0}canvas{max-width:100%}
+.attr-group{margin-top:4px}
+.attr-row{display:grid;grid-template-columns:100px 1fr 30px;gap:10px;align-items:center;margin:5px 0}
+.attr-name{font-size:11px;color:#777;letter-spacing:.2px}
+.attr-val{font-size:11px;color:#999;text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.bar{height:4px;border-radius:99px;background:rgba(255,255,255,.03);overflow:hidden}
+.bar>span{display:block;height:100%;border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.el-ground .bar>span{background:linear-gradient(90deg,var(--ground),rgba(154,132,101,.15))}
+.el-water .bar>span{background:linear-gradient(90deg,var(--water),rgba(59,124,245,.15))}
+.el-fire .bar>span{background:linear-gradient(90deg,var(--fire),rgba(224,64,64,.15))}
+.el-wind .bar>span{background:linear-gradient(90deg,var(--wind),rgba(120,144,168,.15))}
+.el-void .bar>span{background:linear-gradient(90deg,var(--void),rgba(139,92,246,.15))}
+.attr-unverified .attr-name{color:var(--warn)}.attr-unverified .attr-name::after{content:' ?';font-size:9px;font-weight:700;opacity:.7}
+.attr-unverified .bar>span{background:repeating-linear-gradient(90deg,rgba(232,160,48,.3) 0px,rgba(232,160,48,.3) 4px,transparent 4px,transparent 8px)!important}
+.attr-unverified .attr-val{color:var(--warn)}
+.evidence-block{margin-top:10px;padding:10px 12px;border-radius:6px;background:rgba(255,255,255,.015);border:1px solid var(--line)}
+.evidence-match{font-size:11px;color:var(--muted);margin-bottom:6px}.evidence-match strong{color:var(--text)}
+.evidence-stats{display:flex;flex-wrap:wrap;gap:12px}
+.evidence-stat{font-size:11px}.evidence-stat .ev-label{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.5px}.evidence-stat .ev-val{color:var(--text-bright);font-weight:600;font-size:14px;font-variant-numeric:tabular-nums}
+.scout-notes-text{font-size:12px;color:#999;line-height:1.8;white-space:pre-wrap}
+.detail-actions{display:flex;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.detail-actions button{flex:1;padding:10px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--muted);font-weight:600;font-size:11px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;font-family:inherit}
+.detail-actions button:hover{color:var(--text);border-color:rgba(255,255,255,.12);background:rgba(255,255,255,.02)}
+.btn-delete:hover{color:#e88!important;border-color:rgba(224,64,64,.2)!important;background:rgba(224,64,64,.04)!important}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(6px)}
+.modal{width:min(900px,94vw);background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;max-height:90vh;display:flex;flex-direction:column}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--line)}
+.modal-header h2{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--text-bright)}
+.modal-close{background:transparent;border:0;color:var(--muted);font-size:20px;cursor:pointer;padding:4px}.modal-close:hover{color:#fff}
+.modal-body{padding:20px 24px;overflow-y:auto;flex:1}
+.modal-footer{padding:14px 24px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.btn-save,.btn-cancel{padding:10px 24px;border-radius:6px;cursor:pointer;font-weight:600;font-size:12px;letter-spacing:.5px;text-transform:uppercase;border:1px solid var(--line);font-family:inherit;transition:all .2s}
+.btn-save{background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.25);color:var(--gold)}.btn-save:hover{background:rgba(212,168,67,.14);border-color:rgba(212,168,67,.4)}
+.btn-cancel{background:transparent;color:var(--muted)}.btn-cancel:hover{color:var(--text);border-color:rgba(255,255,255,.1)}
+.form-section{margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--line)}.form-section:last-child{border-bottom:0;margin-bottom:0}
+.form-section-title{display:flex;align-items:baseline;gap:8px;font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text-bright)}
+.el-form-section{border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:16px;background:rgba(255,255,255,.008);transition:border-color .3s}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-field{display:flex;flex-direction:column;gap:5px}
+.form-field label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:500}
+.form-field.full-width{grid-column:1/-1}
+.input,textarea{width:100%;padding:10px 12px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border .2s}
+.input:focus,textarea:focus{border-color:rgba(255,255,255,.12)}
+.textarea{resize:vertical;min-height:60px}select.input{cursor:pointer}select.input option{background:#0a0a0f;color:#ddd}
+.slider-grid{display:flex;flex-direction:column;gap:10px}
+.slider-row{display:grid;grid-template-columns:100px 1fr 30px;gap:12px;align-items:center;transition:opacity .2s}
+.slider-label{font-size:11px;color:#777;transition:color .2s}.slider-val{font-size:11px;color:#999;text-align:right;font-variant-numeric:tabular-nums;font-weight:600;transition:color .2s}
+.slider-row.unverified .slider-label{color:var(--warn)}.slider-row.unverified .slider-label::after{content:' ?';font-weight:700;font-size:10px}
+.slider-row.unverified .slider-val{color:var(--warn)}
+.slider-row.high-rated .slider-label{color:var(--text-bright)}.slider-row.high-rated .slider-val{color:var(--text-bright);font-weight:700}
+input[type="range"]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:99px;background:rgba(255,255,255,.04);outline:none;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--text);border:2px solid var(--bg);cursor:pointer;transition:transform .1s;box-shadow:0 0 8px rgba(0,0,0,.4)}
+input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+.evidence-form{margin-top:12px;padding:14px;border-radius:6px;background:rgba(212,168,67,.03);border:1px solid rgba(212,168,67,.12);animation:fadeIn .3s ease}
+.evidence-form-title{font-size:10px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.evidence-form-title::before{content:'⚡ '}
+.ev-match-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ev-stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.evidence-form .input{font-size:12px;padding:8px 10px;background:rgba(0,0,0,.3);border-color:rgba(212,168,67,.1)}
+.evidence-form label{font-size:9px;color:var(--gold);opacity:.7}
+.notes-preview{margin-top:16px;padding:16px;border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.01)}
+.notes-preview-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.notes-preview-title::before{content:'✦ '}
+.notes-preview-text{font-size:12px;color:#888;line-height:1.8;white-space:pre-wrap}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.header{animation:fadeUp .5s ease both}.filter-bar{animation:fadeUp .5s ease .1s both}.table-wrap{animation:fadeUp .5s ease .2s both}
+@media(max-width:900px){.main{padding:16px}.header{padding:16px}.detail-panel{width:100%}.modal{width:96vw}.form-grid{grid-template-columns:1fr}.scores-grid{grid-template-columns:repeat(2,1fr)}.filter-bar{flex-direction:column}}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.06);border-radius:3px}
+</style>
 </head>
 <body>
-  <header>4xO Scout DB MVP</header>
-  <div id="app"></div>
-  <script src="/src/app.js"></script>
+<div class="app">
+  <header class="header"><div class="header-brand"><span class="header-title">One of Our Own</span><span class="header-divider">|</span><span class="header-subtitle">Scout Vault</span></div><button class="btn-add" id="btnAddPlayer">+ Add Player</button></header>
+  <main class="main">
+    <div class="filter-bar"><input type="text" id="filterSearch" class="filter-input" placeholder="Search player or club..."><select id="filterPosition" class="filter-select"><option value="">All Positions</option><option>GK</option><option>CB</option><option>LB</option><option>RB</option><option>CDM</option><option>DM</option><option>CM</option><option>CAM</option><option>AM</option><option>LM</option><option>RM</option><option>LW</option><option>RW</option><option>CF</option><option>ST</option></select><select id="filterTier" class="filter-select"><option value="">All Tiers</option><option value="1">🏆 Tier 1</option><option value="2">🥈 Tier 2</option><option value="3">🥉 Tier 3</option><option value="4">🎯 Tier 4</option><option value="5">⭐ Tier 5</option></select><select id="filterBadge" class="filter-select"><option value="">All Badges</option><option>4xO</option><option>ELITE</option><option>GEM</option><option>ENGINE</option><option>MAESTRO</option><option>WALL</option><option>SILK</option><option>PROSPECT</option></select></div>
+    <div class="table-wrap"><table class="player-table"><thead><tr><th data-sort="name">Player</th><th data-sort="club">Club</th><th data-sort="age">Age</th><th data-sort="position">Pos</th><th data-sort="tier">Tier</th><th>Badges</th><th data-sort="adjustedScore">Score</th></tr></thead><tbody id="playerTableBody"></tbody></table><div class="empty-state" id="emptyState" style="display:none"><div class="empty-kanji">地 水 火 風 空</div><p class="empty-quote">"From one thing, know ten thousand things."</p><p class="empty-cta">Begin scouting.</p></div></div>
+    <div class="detail-panel" id="detailPanel"><button class="detail-close" id="detailClose">✕</button><div id="detailContent"></div></div>
+  </main>
+  <div class="modal-overlay" id="modalOverlay" style="display:none"><div class="modal"><div class="modal-header"><h2 id="modalTitle">Add Player</h2><button class="modal-close" id="modalClose">✕</button></div><div class="modal-body" id="modalBody"></div><div class="modal-footer"><button class="btn-save" id="btnSave">Save Player</button><button class="btn-cancel" id="btnCancel">Cancel</button></div></div></div>
+</div>
+<script>
+const TIER_MULT={1:1.0,2:0.92,3:0.85,4:0.78,5:0.72};
+const EL_KEYS={ground:['pace','acceleration','strength','stamina','agility','jumping'],water:['passing','technique','ballControl','dribbling','finishing','longBalls'],fire:['workRate','pressing','tackling','determination','aggression','composure'],wind:['vision','creativity','awareness','decision','crossing','keyPasses'],void:['talent','ceiling','footballIQ','adaptability','mentality','growth']};
+const EL_LABEL={ground:{name:'Ground',kanji:'地',colour:'#9a8465'},water:{name:'Water',kanji:'水',colour:'#3b7cf5'},fire:{name:'Fire',kanji:'火',colour:'#e04040'},wind:{name:'Wind',kanji:'風',colour:'#7890a8'},void:{name:'Void',kanji:'空',colour:'#8b5cf6'}};
+const AN={pace:'Pace',acceleration:'Acceleration',strength:'Strength',stamina:'Stamina',agility:'Agility',jumping:'Jumping',passing:'Passing',technique:'Technique',ballControl:'Ball Control',dribbling:'Dribbling',finishing:'Finishing',longBalls:'Long Balls',workRate:'Work Rate',pressing:'Pressing',tackling:'Tackling',determination:'Determination',aggression:'Aggression',composure:'Composure',vision:'Vision',creativity:'Creativity',awareness:'Awareness',decision:'Decision Making',crossing:'Crossing',keyPasses:'Key Passes',talent:'Talent',ceiling:'Ceiling',footballIQ:'Football IQ',adaptability:'Adaptability',mentality:'Mentality',growth:'Growth'};
+const BADGE_ORDER=['4xO','ELITE','GEM','ENGINE','MAESTRO','WALL','SILK','PROSPECT'];
+const BADGE_META={'4xO':{css:'badge-4xo',tip:'Academy product'},'ELITE':{css:'badge-elite',tip:'Adjusted 85+'},'GEM':{css:'badge-gem',tip:'Lower league gem'},'ENGINE':{css:'badge-engine',tip:'Fire 80+'},'MAESTRO':{css:'badge-maestro',tip:'Wind 80+'},'WALL':{css:'badge-wall',tip:'Ground 80+'},'SILK':{css:'badge-silk',tip:'Water 80+'},'PROSPECT':{css:'badge-prospect',tip:'Void 80+ & ≤21'}};
+const TIER_LABEL={1:'🏆 Tier 1',2:'🥈 Tier 2',3:'🥉 Tier 3',4:'🎯 Tier 4',5:'⭐ Tier 5'};
+const POSITIONS=['GK','CB','LB','RB','CDM','DM','CM','CAM','AM','LM','RM','LW','RW','CF','ST'];
+const EV_FIELDS={ground:['Distance (km)','Sprints','Top Speed','Aerial Won','Duels Won'],water:['Passes','Pass %','Dribbles','Shots on Target','Goals','Assists'],fire:['Tackles Won','Interceptions','Pressures','Recoveries','Duels Won %'],wind:['Chances Created','Key Passes','Through Balls','Assists','xA'],void:['Minutes','Apps (Season)','Competition','Age at Debut','Growth Notes']};
+
+function elAvg(p,el){const ks=EL_KEYS[el],a=p[el];if(!a)return 0;const valid=ks.filter(k=>(+a[k])>1);if(!valid.length)return 0;return Math.round(valid.reduce((s,k)=>s+(+a[k]),0)/valid.length*10)/10}
+function computeAll(p){
+  const es={};for(const e of Object.keys(EL_KEYS))es[e]=elAvg(p,e);
+  const raw=Math.round(Object.values(es).reduce((a,b)=>a+b,0)/5*10)/10;
+  const adj=Math.round(raw*(TIER_MULT[p.tier]||1)*10)/10;
+  const gr=s=>s>=90?'S':s>=80?'A':s>=70?'B':s>=60?'C':s>=50?'D':'E';
+  const bR=[];
+  if(p.academy)bR.push('4xO');if(adj>=85)bR.push('ELITE');
+  if([3,4,5].includes(+p.tier)&&adj>=70)bR.push('GEM');
+  if(es.fire>=80)bR.push('ENGINE');if(es.wind>=80)bR.push('MAESTRO');
+  if(es.ground>=80)bR.push('WALL');if(es.water>=80)bR.push('SILK');
+  if(es.void>=80&&+p.age<=21)bR.push('PROSPECT');
+  // Count unverified
+  let uvCount=0;for(const el of Object.keys(EL_KEYS))for(const k of EL_KEYS[el])if(p[el]&&+p[el][k]<=1)uvCount++;
+  return{elementScores:es,rawScore:raw,adjustedScore:adj,localGrade:gr(raw),worldGrade:gr(adj),badges:BADGE_ORDER.filter(b=>bR.includes(b)),unverifiedCount:uvCount};
+}
+
+// Auto-generate scout notes
+function genNotes(p){
+  const c=computeAll(p);const es=c.elementScores;const L=[];
+  const posT={GK:'goalkeeper',CB:'centre-back',LB:'left-back',RB:'right-back',CDM:'holding midfielder',DM:'defensive midfielder',CM:'central midfielder',CAM:'attacking midfielder',AM:'attacking midfielder',LM:'left midfielder',RM:'right midfielder',LW:'left winger',RW:'right winger',CF:'centre-forward',ST:'striker'};
+  const elDesc={ground:'physical foundation',water:'technical ability',fire:'fighting spirit',wind:'game intelligence',void:'potential ceiling'};
+  const type=posT[p.position]||p.position;
+  const sorted=Object.entries(es).sort((a,b)=>b[1]-a[1]);
+  const strongest=sorted[0],weakest=sorted[sorted.length-1];
+  // Opening
+  if(c.adjustedScore>=85)L.push(`Elite-level ${type}. Exceptional across multiple dimensions.`);
+  else if(c.adjustedScore>=75)L.push(`Strong ${type} with clear qualities at this level.`);
+  else if(c.adjustedScore>=65)L.push(`Capable ${type} with areas of promise and room to develop.`);
+  else L.push(`Developing ${type}. Needs further observation.`);
+  // Strongest
+  if(strongest[1]>=70)L.push(`\nPrimary strength is ${elDesc[strongest[0]]} (${EL_LABEL[strongest[0]].name}: ${strongest[1]}).`);
+  // Standouts
+  const so=[];for(const el of Object.keys(EL_KEYS))for(const k of EL_KEYS[el]){const v=p[el]&&+p[el][k];if(v>=85)so.push({n:AN[k],v,el})}
+  so.sort((a,b)=>b.v-a.v);
+  if(so.length)L.push(`Standout attributes: ${so.slice(0,6).map(s=>`${s.n} (${s.v})`).join(', ')}.`);
+  // Weakest
+  if(weakest[1]<65)L.push(`\n${EL_LABEL[weakest[0]].name} (${weakest[1]}) is the weakest ring — ${elDesc[weakest[0]]} needs development.`);
+  // Unverified
+  const uv=[];for(const el of Object.keys(EL_KEYS))for(const k of EL_KEYS[el])if(p[el]&&+p[el][k]<=1)uv.push(AN[k]);
+  if(uv.length)L.push(`\n⚠ NEEDS WATCHING: ${uv.join(', ')}. Insufficient data — observe again.`);
+  // Badges
+  if(c.badges.length)L.push(`\nBadges: ${c.badges.join(' · ')}`);
+  if(p.academy)L.push(`Academy product — One of Our Own.`);
+  // Age
+  if(+p.age<=18&&es.void>=80)L.push(`\nAt ${p.age}, the ceiling is significant. Void scores suggest generational potential.`);
+  else if(+p.age<=21)L.push(`\nStill only ${p.age} — trajectory matters more than the snapshot.`);
+  else if(+p.age>=30)L.push(`\nAt ${p.age}, this is the finished article. Peak window.`);
+  // Tier
+  if([3,4,5].includes(+p.tier)&&c.adjustedScore>=65)L.push(`Currently at ${TIER_LABEL[p.tier]} — if these numbers hold at a higher level, serious prospect.`);
+  return L.join('\n');
+}
+
+// Storage
+const SKEY='4xo_vault_v4';
+const DEMO={id:'ethan-nwaneri-001',name:'Ethan Nwaneri',club:'Arsenal',age:17,position:'CAM',academy:true,nationality:'English',height:177,preferredFoot:'Right',tier:1,watchlist:true,imageURL:'',currentValue:'£40m',
+  ground:{pace:72,acceleration:75,strength:58,stamina:68,agility:82,jumping:55},
+  water:{passing:84,technique:88,ballControl:86,dribbling:83,finishing:74,longBalls:72},
+  fire:{workRate:73,pressing:70,tackling:52,determination:78,aggression:60,composure:80},
+  wind:{vision:85,creativity:88,awareness:82,decision:79,crossing:70,keyPasses:84},
+  void:{talent:92,ceiling:94,footballIQ:85,adaptability:82,mentality:80,growth:90},
+  matches:[],evidence:{},scoutNotes:'',dateAdded:'2026-03-14T00:00:00Z',lastUpdated:'2026-03-14T00:00:00Z'};
+DEMO.scoutNotes=genNotes(DEMO);
+
+const DB={
+  _l(){try{const r=localStorage.getItem(SKEY);return r?JSON.parse(r):null}catch(e){return null}},
+  _s(d){localStorage.setItem(SKEY,JSON.stringify(d))},
+  gp(){const d=this._l();return d?d.players:[]},
+  sp(ps){this._s({players:ps,saved:new Date().toISOString()})},
+  add(p){const ps=this.gp();p.id=p.id||'p-'+Date.now()+'-'+Math.random().toString(36).substr(2,6);p.dateAdded=new Date().toISOString();p.lastUpdated=p.dateAdded;ps.push(p);this.sp(ps);return p},
+  upd(id,u){const ps=this.gp();const i=ps.findIndex(p=>p.id===id);if(i<0)return;ps[i]={...ps[i],...u,lastUpdated:new Date().toISOString()};this.sp(ps);return ps[i]},
+  del(id){this.sp(this.gp().filter(p=>p.id!==id))},
+  get(id){return this.gp().find(p=>p.id===id)||null},
+  seed(){if(!this._l())this.sp([DEMO])},
+  exp(){return JSON.stringify({players:this.gp()},null,2)},
+  imp(t){try{const o=JSON.parse(t);if(o.players){this.sp(o.players);return true}}catch(e){}return false}
+};
+
+// App
+(function(){
+let players=[],selectedId=null,sortKey='adjustedScore',sortDir=-1,editingId=null;
+const $=id=>document.getElementById(id);
+const $tb=$('playerTableBody'),$empty=$('emptyState'),$dp=$('detailPanel'),$dc=$('detailContent'),$mo=$('modalOverlay'),$mb=$('modalBody'),$mt=$('modalTitle');
+function esc(s){if(!s)return'';const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function bdg(bs){if(!bs||!bs.length)return'<span class="no-badges">—</span>';return bs.map(b=>{const m=BADGE_META[b];return m?`<span class="badge ${m.css}" title="${m.tip}">${b}</span>`:''}).join('')}
+
+function init(){DB.seed();load();renderTable();bind()}
+function load(){players=DB.gp().map(p=>({...p,...computeAll(p)}))}
+
+function renderTable(){
+  let list=players.slice();
+  const s=($('filterSearch').value||'').toLowerCase(),fp=$('filterPosition').value,ft=$('filterTier').value,fb=$('filterBadge').value;
+  if(s)list=list.filter(p=>p.name.toLowerCase().includes(s)||p.club.toLowerCase().includes(s));
+  if(fp)list=list.filter(p=>p.position===fp);if(ft)list=list.filter(p=>+p.tier===+ft);
+  if(fb)list=list.filter(p=>p.badges&&p.badges.includes(fb));
+  list.sort((a,b)=>{let va=a[sortKey],vb=b[sortKey];if(typeof va==='string'){va=va.toLowerCase();vb=(vb||'').toLowerCase()}return va<vb?-sortDir:va>vb?sortDir:0});
+  if(!list.length){$tb.innerHTML='';$empty.style.display='block';return}
+  $empty.style.display='none';
+  $tb.innerHTML=list.map(p=>`<tr data-id="${p.id}" class="${p.id===selectedId?'active-row':''}">
+    <td class="col-player"><span class="player-name">${esc(p.name)}</span>${p.watchlist?'<span class="watchlist-dot">●</span>':''}${p.unverifiedCount?`<span style="color:var(--warn);font-size:9px;margin-left:6px" title="${p.unverifiedCount} unverified">${p.unverifiedCount}?</span>`:''}</td>
+    <td>${esc(p.club)}</td><td>${p.age}</td><td>${p.position}</td>
+    <td><span class="tier-chip tier-${p.tier}">${p.tier}</span></td>
+    <td><div class="badge-row">${bdg(p.badges)}</div></td>
+    <td><span class="score-chip"><span class="score-num">${p.adjustedScore}</span><span class="grade ${p.worldGrade}">${p.worldGrade}</span></span></td>
+  </tr>`).join('');
+}
+
+function openDetail(id){
+  const p=players.find(x=>x.id===id);if(!p)return;selectedId=id;renderTable();
+  $dc.innerHTML=`
+    <div class="detail-header"><h2 class="detail-name">${esc(p.name)}</h2>
+    <div class="detail-meta">${esc(p.club)} · ${p.age} · ${p.position}${p.nationality?' · '+esc(p.nationality):''}${p.height?' · '+p.height+'cm':''}${p.preferredFoot?' · '+p.preferredFoot:''}${p.currentValue?' · '+esc(p.currentValue):''}</div>
+    <div class="detail-tier"><span class="tier-chip tier-${p.tier}">${TIER_LABEL[p.tier]}</span></div>
+    <div class="badge-row detail-badges">${bdg(p.badges)}</div></div>
+    <div class="section"><div class="section-title"><span class="kanji" style="color:var(--void)">五輪</span>Five Rings</div><div class="radar-wrap"><canvas id="radarCanvas" width="340" height="340"></canvas></div></div>
+    <div class="section"><div class="scores-grid">
+      <div class="score-block"><div class="score-label">Raw</div><div class="score-value">${p.rawScore}</div></div>
+      <div class="score-block"><div class="score-label">Adjusted</div><div class="score-value">${p.adjustedScore}</div></div>
+      <div class="score-block"><div class="score-label">Local</div><div class="score-value"><span class="grade ${p.localGrade}">${p.localGrade}</span></div></div>
+      <div class="score-block"><div class="score-label">World</div><div class="score-value"><span class="grade ${p.worldGrade}">${p.worldGrade}</span></div></div>
+    </div></div>
+    ${['ground','water','fire','wind','void'].map(el=>{const L=EL_LABEL[el];const ev=p.evidence&&p.evidence[el];return`
+      <div class="section"><div class="section-title"><span class="kanji" style="color:${L.colour}">${L.kanji}</span><span>${L.name}</span><span class="muted">${p.elementScores[el]}</span></div>
+      <div class="attr-group el-${el}">${EL_KEYS[el].map(k=>{const v=(p[el]&&p[el][k])||0;const uv=+v<=1;return`<div class="attr-row${uv?' attr-unverified':''}"><span class="attr-name">${AN[k]}</span><div class="bar"><span style="width:${Math.max(v,1)}%"></span></div><span class="attr-val">${uv?'?':v}</span></div>`}).join('')}</div>
+      ${ev&&ev.match?`<div class="evidence-block"><div class="evidence-match">Evidence: <strong>${esc(ev.match)}</strong>${ev.date?' — '+esc(ev.date):''}</div>${Object.entries(ev.stats||{}).filter(([,v])=>v).length?`<div class="evidence-stats">${Object.entries(ev.stats).filter(([,v])=>v).map(([k,v])=>`<div class="evidence-stat"><div class="ev-label">${esc(k)}</div><div class="ev-val">${esc(v)}</div></div>`).join('')}</div>`:''}</div>`:''}</div>`}).join('')}
+    <div class="section"><div class="section-title">Scout Report</div><p class="scout-notes-text">${esc(p.scoutNotes||'')}</p></div>
+    <div class="detail-actions"><button class="btn-edit" data-id="${p.id}">Edit</button><button class="btn-export-single" data-id="${p.id}">Export</button><button class="btn-delete" data-id="${p.id}">Delete</button></div>`;
+  $dp.classList.add('open');requestAnimationFrame(()=>drawRadar(p));
+}
+function closeDetail(){$dp.classList.remove('open');selectedId=null;renderTable()}
+
+function drawRadar(p){
+  const c=document.getElementById('radarCanvas');if(!c)return;const ctx=c.getContext('2d'),W=c.width,H=c.height,cx=W/2,cy=H/2,R=Math.min(cx,cy)-42;
+  const els=['ground','water','fire','wind','void'],scores=els.map(e=>p.elementScores[e]||0);ctx.clearRect(0,0,W,H);
+  function pt(i,s){const a=-Math.PI/2+i*2*Math.PI/5;return{x:cx+Math.cos(a)*R*s,y:cy+Math.sin(a)*R*s}}
+  [.25,.5,.75,1].forEach(s=>{ctx.beginPath();for(let i=0;i<5;i++){const q=pt(i,s);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)}ctx.closePath();ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;ctx.stroke()});
+  els.forEach((el,i)=>{const end=pt(i,1);ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(end.x,end.y);ctx.strokeStyle=EL_LABEL[el].colour+'30';ctx.lineWidth=1;ctx.stroke()});
+  ctx.beginPath();scores.forEach((s,i)=>{const q=pt(i,s/100);i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y)});ctx.closePath();
+  const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,R);grd.addColorStop(0,'rgba(139,92,246,.18)');grd.addColorStop(1,'rgba(139,92,246,.03)');
+  ctx.fillStyle=grd;ctx.fill();ctx.strokeStyle='rgba(139,92,246,.5)';ctx.lineWidth=1.5;ctx.stroke();
+  scores.forEach((s,i)=>{const q=pt(i,s/100);ctx.beginPath();ctx.arc(q.x,q.y,3.5,0,Math.PI*2);ctx.fillStyle=EL_LABEL[els[i]].colour;ctx.fill();ctx.beginPath();ctx.arc(q.x,q.y,8,0,Math.PI*2);ctx.fillStyle=EL_LABEL[els[i]].colour+'18';ctx.fill()});
+  els.forEach((el,i)=>{const L=EL_LABEL[el],lp=pt(i,1.2);ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=L.colour;ctx.font="600 11px 'DM Sans'";ctx.fillText(L.name,lp.x,lp.y-8);ctx.font="400 16px 'Noto Serif JP'";ctx.fillText(L.kanji,lp.x,lp.y+10)});
+}
+
+function openModal(player){
+  editingId=player?player.id:null;$mt.textContent=player?'Edit Player':'Add Player';
+  const p=player||{};const ev=p.evidence||{};
+  $mb.innerHTML=`
+    <div class="form-section"><h3 class="form-section-title">Basic Info</h3><div class="form-grid">
+      <div class="form-field"><label>Name</label><input type="text" id="fName" value="${esc(p.name||'')}" class="input"></div>
+      <div class="form-field"><label>Club</label><input type="text" id="fClub" value="${esc(p.club||'')}" class="input"></div>
+      <div class="form-field"><label>Age</label><input type="number" id="fAge" value="${p.age||''}" class="input" min="10" max="45"></div>
+      <div class="form-field"><label>Position</label><select id="fPos" class="input">${POSITIONS.map(x=>`<option ${p.position===x?'selected':''}>${x}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Nationality</label><input type="text" id="fNat" value="${esc(p.nationality||'')}" class="input"></div>
+      <div class="form-field"><label>Height (cm)</label><input type="number" id="fHt" value="${p.height||''}" class="input"></div>
+      <div class="form-field"><label>Foot</label><select id="fFoot" class="input"><option ${p.preferredFoot==='Right'?'selected':''}>Right</option><option ${p.preferredFoot==='Left'?'selected':''}>Left</option><option ${p.preferredFoot==='Both'?'selected':''}>Both</option></select></div>
+      <div class="form-field"><label>Tier</label><select id="fTier" class="input">${[1,2,3,4,5].map(t=>`<option value="${t}" ${+p.tier===t?'selected':''}>${TIER_LABEL[t]}</option>`).join('')}</select></div>
+      <div class="form-field"><label>Academy</label><select id="fAcad" class="input"><option value="true" ${p.academy?'selected':''}>Yes</option><option value="false" ${!p.academy?'selected':''}>No</option></select></div>
+      <div class="form-field"><label>Value</label><input type="text" id="fVal" value="${esc(p.currentValue||'')}" class="input" placeholder="e.g. £40m"></div>
+    </div></div>
+    ${['ground','water','fire','wind','void'].map(el=>{const L=EL_LABEL[el];const eev=ev[el]||{};return`
+      <div class="el-form-section" id="elSec_${el}" style="border-color:${L.colour}20">
+        <h3 class="form-section-title"><span class="kanji" style="color:${L.colour}">${L.kanji}</span>${L.name}</h3>
+        <div class="slider-grid">${EL_KEYS[el].map(k=>{const v=p[el]!=null&&p[el][k]!=null?p[el][k]:50;return`
+          <div class="slider-row${+v<=1?' unverified':''}${+v>=85?' high-rated':''}" id="sr_${el}_${k}">
+            <label class="slider-label">${AN[k]}</label>
+            <input type="range" min="0" max="99" value="${v}" class="slider" data-el="${el}" data-attr="${k}">
+            <span class="slider-val">${+v<=1?'?':v}</span>
+          </div>`}).join('')}</div>
+        <div id="evSlot_${el}" style="display:none"><div class="evidence-form">
+          <div class="evidence-form-title">Evidence Required — Prove It</div>
+          <div class="ev-match-row">
+            <div class="form-field"><label>Match (vs)</label><input type="text" class="input" id="evM_${el}" value="${esc(eev.match||'')}"></div>
+            <div class="form-field"><label>Date</label><input type="date" class="input" id="evD_${el}" value="${eev.date||''}"></div>
+          </div>
+          <div class="ev-stats-row">${EV_FIELDS[el].map(f=>{const sv=(eev.stats&&eev.stats[f])||'';return`<div class="form-field"><label>${f}</label><input type="text" class="input ev-si" data-el="${el}" data-f="${f}" value="${esc(sv)}"></div>`}).join('')}</div>
+        </div></div>
+      </div>`}).join('')}
+    <div class="notes-preview" id="notesPreview"><div class="notes-preview-title">Auto-Generated Scout Report</div><div class="notes-preview-text" id="npText">Adjust sliders to generate...</div></div>`;
+  $mo.style.display='flex';bindSliders();updateEvVis();updatePreview();
+}
+
+function bindSliders(){
+  document.querySelectorAll('.modal .slider').forEach(sl=>{
+    sl.addEventListener('input',function(){
+      const v=+this.value,row=this.closest('.slider-row'),vs=row.querySelector('.slider-val');
+      vs.textContent=v<=1?'?':v;
+      row.classList.toggle('unverified',v<=1);row.classList.toggle('high-rated',v>=85);
+      updateEvVis();updatePreview();
+    });
+  });
+}
+function updateEvVis(){
+  ['ground','water','fire','wind','void'].forEach(el=>{
+    let hi=false;document.querySelectorAll(`.slider[data-el="${el}"]`).forEach(s=>{if(+s.value>=85)hi=true});
+    const slot=document.getElementById('evSlot_'+el);if(slot)slot.style.display=hi?'block':'none';
+    const sec=document.getElementById('elSec_'+el);if(sec)sec.style.borderColor=EL_LABEL[el].colour+(hi?'40':'20');
+  });
+}
+function updatePreview(){
+  const tp={name:$('fName')?.value||'Player',club:$('fClub')?.value||'Club',age:+($('fAge')?.value)||20,position:$('fPos')?.value||'CM',academy:$('fAcad')?.value==='true',tier:+($('fTier')?.value)||1};
+  ['ground','water','fire','wind','void'].forEach(el=>{tp[el]={};EL_KEYS[el].forEach(k=>{const sl=document.querySelector(`.slider[data-el="${el}"][data-attr="${k}"]`);tp[el][k]=sl?+sl.value:50})});
+  const pr=$('npText');if(pr)pr.textContent=genNotes(tp);
+}
+function closeModal(){$mo.style.display='none';editingId=null}
+function savePlayer(){
+  const name=$('fName').value.trim(),club=$('fClub').value.trim();
+  if(!name||!club){alert('Name and Club required.');return}
+  const p={name,club,age:+$('fAge').value||17,position:$('fPos').value,nationality:$('fNat').value.trim(),height:+$('fHt').value||null,preferredFoot:$('fFoot').value,tier:+$('fTier').value,academy:$('fAcad').value==='true',currentValue:$('fVal').value.trim(),watchlist:false,imageURL:'',matches:[]};
+  ['ground','water','fire','wind','void'].forEach(el=>{p[el]={};EL_KEYS[el].forEach(k=>{const sl=document.querySelector(`[data-el="${el}"][data-attr="${k}"]`);p[el][k]=sl?+sl.value:50})});
+  p.evidence={};
+  ['ground','water','fire','wind','void'].forEach(el=>{const mi=document.getElementById('evM_'+el);if(mi&&mi.value.trim()){const stats={};document.querySelectorAll(`.ev-si[data-el="${el}"]`).forEach(inp=>{if(inp.value.trim())stats[inp.dataset.f]=inp.value.trim()});p.evidence[el]={match:mi.value.trim(),date:(document.getElementById('evD_'+el)||{}).value||'',stats}}});
+  p.scoutNotes=genNotes(p);
+  if(editingId){const ex=DB.get(editingId);p.id=editingId;p.watchlist=ex?ex.watchlist:false;p.matches=ex?ex.matches:[];p.dateAdded=ex?ex.dateAdded:new Date().toISOString();DB.upd(editingId,p)}
+  else DB.add(p);
+  closeModal();load();renderTable();if(editingId&&selectedId===editingId)openDetail(editingId);
+}
+
+function bind(){
+  $('btnAddPlayer').onclick=()=>openModal(null);$('btnSave').onclick=savePlayer;$('btnCancel').onclick=closeModal;$('modalClose').onclick=closeModal;
+  $mo.onclick=e=>{if(e.target===$mo)closeModal()};$('detailClose').onclick=closeDetail;
+  $tb.onclick=e=>{const r=e.target.closest('tr[data-id]');if(r)openDetail(r.dataset.id)};
+  $dc.onclick=e=>{const b=e.target;
+    if(b.classList.contains('btn-edit')){const p=DB.get(b.dataset.id);if(p)openModal(p)}
+    if(b.classList.contains('btn-delete')&&confirm('Delete?')){DB.del(b.dataset.id);closeDetail();load();renderTable()}
+    if(b.classList.contains('btn-export-single')){const p=DB.get(b.dataset.id);if(p){const bl=new Blob([JSON.stringify(p,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=p.name.replace(/\s+/g,'_')+'.json';a.click()}}
+  };
+  document.querySelectorAll('.player-table th[data-sort]').forEach(th=>th.onclick=()=>{const k=th.dataset.sort;if(sortKey===k)sortDir*=-1;else{sortKey=k;sortDir=k==='name'||k==='club'?1:-1}renderTable()});
+  ['filterSearch','filterPosition','filterTier','filterBadge'].forEach(id=>{const el=$(id);el.oninput=renderTable;el.onchange=renderTable});
+  document.onkeydown=e=>{if(e.key==='Escape'){if($mo.style.display!=='none')closeModal();else if($dp.classList.contains('open'))closeDetail()}};
+}
+document.addEventListener('DOMContentLoaded',init);
+})();
+</script>
 </body>
 </html>

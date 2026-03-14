@@ -1,6 +1,13 @@
 {
- "buildCommand": "",
- "outputDirectory": "public",
- "framework": null,
- "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "framework": null
 }
+```
+
+So the structure should be:
+```
+4xO-Scout/
+├── vercel.json
+└── public/
+    └── index.html    ← (the scout-vault-v2.html file, renamed)
