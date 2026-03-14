@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scout Vault | One of Our Own</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-brand">
+      <span class="header-title">One of Our Own</span>
+      <span class="header-divider">|</span>
+      <span class="header-subtitle">Scout Vault</span>
+    </div>
+    <button class="btn-add" id="btnAddPlayer">+ Add Player</button>
+  </header>
+
+  <main class="main">
+    <!-- Filter Bar -->
+    <div class="filter-bar" id="filterBar">
+      <input type="text" id="filterSearch" class="filter-input" placeholder="Search by name...">
+      <select id="filterPosition" class="filter-select">
+        <option value="">All Positions</option>
+        <option>GK</option><option>CB</option><option>LB</option><option>RB</option>
+        <option>CDM</option><option>CM</option><option>CAM</option><option>LM</option><option>RM</option>
+        <option>LW</option><option>RW</option><option>CF</option><option>ST</option><option>DM</option><option>AM</option>
+      </select>
+      <select id="filterTier" class="filter-select">
+        <option value="">All Tiers</option>
+        <option value="1">Tier 1</option><option value="2">Tier 2</option>
+        <option value="3">Tier 3</option><option value="4">Tier 4</option><option value="5">Tier 5</option>
+      </select>
+      <select id="filterBadge" class="filter-select">
+        <option value="">All Badges</option>
+        <option>4xO</option><option>ELITE</option><option>GEM</option>
+        <option>ENGINE</option><option>MAESTRO</option><option>PROSPECT</option>
+        <option>WALL</option><option>SILK</option>
+      </select>
+    </div>
+
+    <!-- Player Table -->
+    <div class="table-wrap">
+      <table class="player-table" id="playerTable">
+        <thead>
+          <tr>
+            <th data-sort="name">Player</th>
+            <th data-sort="club">Club</th>
+            <th data-sort="age">Age</th>
+            <th data-sort="position">Pos</th>
+            <th data-sort="tier">Tier</th>
+            <th>Badges</th>
+            <th data-sort="adjustedScore">Score</th>
+          </tr>
+        </thead>
+        <tbody id="playerTableBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <p class="empty-quote">"From one thing, know ten thousand things."</p>
+        <p class="empty-cta">— Begin scouting.</p>
+      </div>
+    </div>
+
+    <!-- Detail Panel (slide-in) -->
+    <div class="detail-panel" id="detailPanel">
+      <button class="detail-close" id="detailClose">✕</button>
+      <div id="detailContent"></div>
+    </div>
+  </main>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" id="modalOverlay" style="display:none;">
+    <div class="modal" id="playerModal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add Player</h2>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer">
+        <button class="btn-save" id="btnSave">Save Player</button>
+        <button class="btn-cancel" id="btnCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="src/scoring.js"></script>
+  <script src="src/storage.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>

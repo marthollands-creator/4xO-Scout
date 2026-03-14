@@ -1,0 +1,145 @@
+/* 4xO Scout DB — dark premium styling + badge showpiece */
+:root{
+  --bg:#0f0f0f;
+  --panel:#111111;
+  --card:#141414;
+  --text:#eaeaea;
+  --muted:#a9a9a9;
+  --line:#232323;
+
+  /* Elements */
+  --ground:#8B7355;
+  --water:#2563EB;
+  --fire:#DC2626;
+  --wind:#64748B;
+  --void:#7C3AED;
+
+  /* Badges */
+  --badge-4xo:#F59E0B;
+  --badge-elite:#7C3AED;
+  --badge-gem:#059669;
+  --badge-engine:#DC2626;
+  --badge-maestro:#0EA5E9;
+  --badge-prospect:#E2E8F0;
+  --badge-wall:#475569;
+  --badge-silk:#14B8A6;
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter, system-ui, -apple-system, Segoe UI, Arial}
+
+.header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid var(--line);background:var(--panel)}
+.header-brand{display:flex;gap:10px;align-items:baseline}
+.header-title{font-weight:700;font-family:"Noto Serif JP", serif;letter-spacing:.2px}
+.header-divider{opacity:.35}
+.header-subtitle{opacity:.75}
+
+.btn-add{background:linear-gradient(180deg,#1f2937,#141b26);border:1px solid #2a2a2a;color:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+.btn-add:hover{border-color:#3b3b3b}
+
+.main{padding:20px 28px}
+
+.filter-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.filter-input,.filter-select{background:#0f0f0f;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px;color:#fff;outline:none}
+.filter-input::placeholder{color:#666}
+
+.table-wrap{margin-top:6px}
+.player-table{width:100%;border-collapse:collapse;background:rgba(255,255,255,0.01);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.player-table thead{background:rgba(255,255,255,0.02)}
+.player-table th,.player-table td{padding:12px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+.player-table th{font-weight:600;letter-spacing:.2px;color:#d7d7d7;user-select:none}
+.player-table tbody tr{cursor:pointer}
+.player-table tbody tr:hover{background:rgba(255,255,255,0.03)}
+
+.score-chip{display:inline-flex;align-items:center;gap:8px;font-weight:700}
+.grade{display:inline-block;min-width:22px;text-align:center;border-radius:6px;padding:2px 6px;font-size:12px;border:1px solid #2a2a2a}
+.grade.S{color:#facc15;border-color:#5c4b00}
+.grade.A{color:#c4b5fd;border-color:#2f205b}
+.grade.B{color:#93c5fd;border-color:#1e3a8a}
+.grade.C{color:#86efac;border-color:#14532d}
+.grade.D{color:#d4d4d4;border-color:#3a3a3a}
+.grade.E{color:#fca5a5;border-color:#7f1d1d}
+
+/* Badge showpiece */
+.badge-row{display:flex;flex-wrap:wrap;gap:6px}
+.badge{
+  width:60px; height:22px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  position:relative;
+  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.06);
+  overflow:hidden;
+}
+.badge::after{content:"";position:absolute;inset:-40%;transform:rotate(20deg);opacity:0;}
+
+.badge-4xo{background:rgba(245,158,11,0.14);border-color:rgba(245,158,11,0.35);color:#ffd48a}
+.badge-elite{background:rgba(124,58,237,0.16);border-color:rgba(124,58,237,0.35);color:#d7c6ff}
+.badge-gem{background:rgba(5,150,105,0.16);border-color:rgba(5,150,105,0.38);color:#a7f3d0}
+.badge-engine{background:rgba(220,38,38,0.16);border-color:rgba(220,38,38,0.35);color:#fecaca}
+.badge-maestro{background:rgba(14,165,233,0.14);border-color:rgba(14,165,233,0.35);color:#bae6fd}
+.badge-prospect{background:rgba(226,232,240,0.10);border-color:rgba(226,232,240,0.35);color:#f1f5f9}
+.badge-wall{background:rgba(71,85,105,0.18);border-color:rgba(148,163,184,0.25);color:#e2e8f0}
+.badge-silk{background:rgba(20,184,166,0.14);border-color:rgba(20,184,166,0.35);color:#99f6e4}
+
+/* Animations */
+@keyframes shimmer{0%{transform:translateX(-140%) rotate(20deg);opacity:0}15%{opacity:.9}55%{opacity:.25}100%{transform:translateX(140%) rotate(20deg);opacity:0}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 rgba(124,58,237,0)}50%{box-shadow:0 0 16px rgba(124,58,237,0.35)}}
+@keyframes ember{0%,100%{box-shadow:0 0 0 rgba(220,38,38,0)}50%{box-shadow:0 0 14px rgba(220,38,38,0.35)}}
+@keyframes gradientShift{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(18deg)}100%{filter:hue-rotate(0deg)}}
+@keyframes sparkle{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes metallic{0%{filter:brightness(1)}50%{filter:brightness(1.12)}100%{filter:brightness(1)}}
+
+.badge-4xo::after{background:linear-gradient(90deg, transparent, rgba(255,255,255,0.75), transparent);opacity:.0;animation:shimmer 2.4s infinite;}
+.badge-gem::after{background:linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent);animation:shimmer 2.8s infinite;opacity:.0;}
+.badge-silk{animation:gradientShift 3.5s ease-in-out infinite}
+.badge-elite{animation:glow 2.2s ease-in-out infinite}
+.badge-engine{animation:ember 2.0s ease-in-out infinite}
+.badge-maestro{animation:gradientShift 4.2s ease-in-out infinite}
+.badge-wall{animation:metallic 2.8s ease-in-out infinite}
+.badge-prospect::after{background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.85), transparent 45%);animation:sparkle 2.4s ease-in-out infinite;opacity:.35}
+
+/* Detail panel */
+.detail-panel{position:fixed;right:0;top:0;width:420px;bottom:0;background:rgba(15,15,15,0.98);border-left:1px solid var(--line);overflow:auto;padding:18px;transform:translateX(100%);transition:transform .25s ease;backdrop-filter: blur(10px)}
+.detail-panel.open{transform:translateX(0)}
+.detail-close{position:sticky;top:0;float:right;background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer}
+
+.section{border:1px solid var(--line);border-radius:14px;padding:12px 12px;margin-top:12px;background:rgba(255,255,255,0.02)}
+.section-title{display:flex;align-items:baseline;gap:10px;font-weight:700}
+.kanji{font-family:"Noto Serif JP", serif;opacity:.9}
+.muted{color:var(--muted)}
+
+.radar-wrap{display:flex;justify-content:center}
+canvas{max-width:100%}
+
+.attr-group{margin-top:10px}
+.attr-row{display:grid;grid-template-columns: 1fr 56px;gap:10px;align-items:center;margin:7px 0}
+.attr-name{font-size:13px;color:#d8d8d8}
+.attr-val{font-size:12px;color:#ddd;text-align:right}
+.bar{height:8px;border-radius:999px;background:#0c0c0c;border:1px solid rgba(255,255,255,0.08);overflow:hidden}
+.bar > span{display:block;height:100%;width:50%;border-radius:999px}
+
+.el-ground span{background:linear-gradient(90deg, rgba(139,115,85,0.9), rgba(139,115,85,0.25))}
+.el-water  span{background:linear-gradient(90deg, rgba(37,99,235,0.9), rgba(37,99,235,0.25))}
+.el-fire   span{background:linear-gradient(90deg, rgba(220,38,38,0.9), rgba(220,38,38,0.25))}
+.el-wind   span{background:linear-gradient(90deg, rgba(100,116,139,0.9), rgba(100,116,139,0.25))}
+.el-void   span{background:linear-gradient(90deg, rgba(124,58,237,0.9), rgba(124,58,237,0.25))}
+
+/* Modal scaffold (will be used later for sliders) */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center}
+.modal{width:min(860px, 92vw);background:rgba(15,15,15,0.98);border:1px solid var(--line);border-radius:16px;overflow:auto;max-height:86vh}
+.modal-header{display:flex;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.modal-body{padding:14px 16px}
+.modal-footer{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+.modal-close{background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer}
+.btn-save,.btn-cancel{padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:700;border:1px solid #2a2a2a}
+.btn-save{background:#111827;color:#fff}
+.btn-cancel{background:transparent;color:#fff}
+
+@media (max-width: 900px){
+  .detail-panel{width:100%;}
+}

@@ -1,0 +1,34 @@
+/* Minimal CSS to render badges, table, and radar placeholder */
+:root{
+  --bg:#0f0f0f; --card:#141414; --text:#eaeaea; --muted:#a9a9a9;
+  --earth:#8B7355; --water:#2563EB; --fire:#DC2626; --wind:#64748B; --void:#7C3AED;
+}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter, system-ui, Arial}
+.header{display:flex;justify-content:space-between;align-items:center;padding:20px 28px;border-bottom:1px solid #222;background:#111}
+.header-brand{display:flex;gap:8px;align-items:baseline}
+.header-title{font-weight:700;font-family:Noto Serif JP, serif}
+.header-subtitle{opacity:.8}
+.btn-add{background:#1f2937;border:1px solid #333;color:#fff;padding:8px 12px;border-radius:6px;cursor:pointer}
+.main{padding:20px 28px}
+.filter-bar{display:flex;gap:12px;margin-bottom:12px}
+.filter-input,.filter-select{background:#111;border:1px solid #333;border-radius:6px;padding:8px 10px;color:#fff}
+.table-wrap{margin-top:6px}
+.player-table{width:100%;border-collapse:collapse}
+.player-table th,.player-table td{padding:10px;border-bottom:1px solid #222}
+.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#333;margin-right:6px;font-size:12px;letter-spacing:.2px;}
+.badge.earth{background:#8B7355}
+.badge.water{background:#2563EB}
+.badge.fire{background:#DC2626}
+.badge.wind{background:#64748B}
+.badge.void{background:#7C3AED}
+.detail-panel{position:fixed;right:0;top:0;width:360px;bottom:0;background:#0f0f0f;border-left:1px solid #333;overflow:auto;padding:16px;transform:translateX(100%);transition:transform .3s ease}
+.detail-panel.open{transform:translateX(0)}
+.detail-close{position:sticky;top:0;float:right;background:transparent;border:0;color:#fff;font-size:20px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
+.modal{width:640px;background:#0f0f0f;border:1px solid #333;border-radius:8px;overflow:auto;max-height:80vh}
+.modal-header{display:flex;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #222}
+.modal-body{padding:12px 14px}
+.modal-footer{padding:12px 14px;border-top:1px solid #222;display:flex;gap:8px;justify-content:flex-end}
+.input, textarea{width:100%;padding:8px;border-radius:6px;border:1px solid #333;background:#111;color:#fff}
+.canvas{width:100%;height:auto}
+@media (max-width: 900px){.detail-panel{width:100%;right:0;transform:translateX(0)} }
